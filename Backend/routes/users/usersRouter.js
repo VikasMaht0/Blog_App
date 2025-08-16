@@ -11,7 +11,7 @@ usersRouter.post('/register', register);
 usersRouter.post("/login",login);
 
 //!Profile Route
-usersRouter.get("/profile/:id",isLoggedIn,getProfile);
+usersRouter.get("/profile",isLoggedIn,getProfile);
 
 
 module.exports = usersRouter;

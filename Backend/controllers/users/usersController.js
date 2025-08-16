@@ -69,8 +69,10 @@ exports.login = async(req,res) =>{
 //@route GET /api/v1/users/profile/:id
 //@access private
 exports.getProfile = async(req,res)=>{
+    console.log("Rec", req.userAuth);
     try {
-        res.json({status:"Success",message:"Profile fatched",data:"dummy user"});
+        const user =await User.findById(req.userAuth.id)
+        res.json({status:"Success",message:"Profile fatched",user});
     } catch (error) {
          res.json({status:"Error",message:error.message});
 
