@@ -13,10 +13,12 @@ const categorySchema = new mongoose.Schema({
       type:Number,
       default:0,
    },
-   post:{
+   post:[
+   {
     type:mongoose.Schema.Types.ObjectId,
     ref:"Post",
    },
+  ]
 
 },  
    {
