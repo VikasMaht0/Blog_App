@@ -6,7 +6,7 @@ const postSchema = new mongoose.Schema({
     },
     image:{
         type: String,
-        require: true,
+        default:"",
     },
     claps:{
        type: Number,
