@@ -4,7 +4,7 @@ const categorySchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    auther:{
+    author:{
     type: mongoose.Schema.Types.ObjectId,
     ref:"User",
     require:true,

@@ -1,13 +1,15 @@
+
+const User = require('../../models/Users/User')
+const bcryptjs = require('bcryptjs');
+const generateToken = require('../../utils/generateToken');
+const asyncHandler = require('express-async-handler');
+
 //@desc Register new user
 //@route POST /api/v1/users/register
 //@access public
-const User = require('../../models/Users/User')
-const bcryptjs = require('bcryptjs');
-const generateToken = require('../../utils/generateToken')
-
-
-exports.register = async (req,res)=>{
-   try {
+exports.register = asyncHandler(
+    async (req,res,next)=>{
+   
     const {username,password,email} = req.body;
     const user = await User.findOne({username});
 
@@ -29,19 +31,17 @@ exports.register = async (req,res)=>{
         email:newUser?.email,
         role:newUser?.role,
     })
-   } catch (error) {
-    res.json({
-        status:"Failed",
-        message:error?.message
-    });
-   }
+   
 }
+);
+
 
 //@desc Login new user
 //@route POST /api/v1/users/login
 //@access public
-exports.login = async(req,res) =>{
-    try {
+exports.login = asyncHandler(
+       async(req,res,next) =>{
+    
          const {username,password} = req.body;
          const user = await User.findOne({username})
      if(!user){
@@ -56,25 +56,21 @@ exports.login = async(req,res) =>{
 
         res.json({ status:"Success", email:user?.email,_id:user?._id,username:user?.username,role:user?.role,token:generateToken(user) });
      
-    } catch (error) {
-           res.json({
-        status:"Failed",
-        message:error?.message
-    });
-    }
+    
     
 }
+);
+
 
 //@desc ProfileView new user
 //@route GET /api/v1/users/profile/:id
 //@access private
-exports.getProfile = async(req,res)=>{
+exports.getProfile = asyncHandler(
+       async(req,res,next)=>{
     console.log("Rec", req.userAuth);
-    try {
+    
         const user =await User.findById(req.userAuth.id)
         res.json({status:"Success",message:"Profile fatched",user});
-    } catch (error) {
-         res.json({status:"Error",message:error.message});
-
-    }
+    
 }
+);

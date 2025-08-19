@@ -7,7 +7,7 @@ const generateToken = (user) =>{
         }
      }
 
-     const token = jwt.sign(payLoad,"secretKey",{expiresIn:3600});
+     const token = jwt.sign(payLoad,process.env.JWT_KEY,{expiresIn:3600});
 
      return token;
 };

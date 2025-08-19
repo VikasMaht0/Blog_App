@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const usersRouter = require("./routes/users/usersRouter");
 const connectDB = require("./config/database");
+const {globalErrorHandler , notFound} = require("./middlewares/globleErrorHandler");
+const categoriesRouter = require("./routes/categories/categoriesRouter");
 //!Create an express app
 const app = express();
 
@@ -14,14 +16,16 @@ connectDB();
 //!setup the middleware
 app.use(express.json());
 
-//?setup the Router
+//?setup the userRouter
 app.use("/api/v1/users",usersRouter);
+//?setup the categoryRouter
+app.use('/api/v1/categories',categoriesRouter);
+
+//?Not found error handler
+app.use(notFound);
 
 //?setup the global error handler
-app.use((error,req,res,next)=>{
-    console.log("error",error);
-    res.status(500).json({status:"failed"})
-});
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 9080;
 app.listen(PORT,()=>{

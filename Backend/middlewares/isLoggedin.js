@@ -6,11 +6,12 @@ const isLoggedIn = (req,res,next) =>{
     const token = req.headers.authorization?.split(" ")[1]
 
     //Verify token 
-    jwt.verify(token,"secretKey",async(err,decoded)=>{
+    jwt.verify(token,process.env.JWT_KEY,async(err,decoded)=>{
 
     //if unsuccessfull then send the erroe message
     if(err){
-        return res.status(401).json({status:"failed",message:err?.message})
+         const error = new Error(err?.message);
+         next(err);
     }else{
      //if successful , then pass the User object to next path
         const userId=decoded?.user?.id;
