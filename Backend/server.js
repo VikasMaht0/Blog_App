@@ -4,6 +4,7 @@ const usersRouter = require("./routes/users/usersRouter");
 const connectDB = require("./config/database");
 const {globalErrorHandler , notFound} = require("./middlewares/globleErrorHandler");
 const categoriesRouter = require("./routes/categories/categoriesRouter");
+const postsRouter = require("./routes/posts/postsRouter");
 //!Create an express app
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(express.json());
 app.use("/api/v1/users",usersRouter);
 //?setup the categoryRouter
 app.use('/api/v1/categories',categoriesRouter);
+//?serup thr postRouter
+app.use("/api/v1/posts",postsRouter)
 
 //?Not found error handler
 app.use(notFound);
