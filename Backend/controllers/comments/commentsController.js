@@ -6,9 +6,9 @@ const Comment = require("../../models/Comments/Comments");
 //@route POST /api/v1/comments/:postId
 //@access private
 
-exports.CreateComment = asyncHandler(async(req,res)=>{
+exports.createComment = asyncHandler(async(req,res)=>{
     //Get the payload
-    const {message} = req.body;
+    const { message } = req.body;
 
     //Get the post id
     const postId = req.params.postId;
@@ -16,7 +16,7 @@ exports.CreateComment = asyncHandler(async(req,res)=>{
     //Create the Comment
     const comment = await Comment.create({
          message,
-         authorId:req?.userAuth?._id,
+         author:req?.userAuth?._id,
          postId 
         });
 
@@ -33,3 +33,36 @@ exports.CreateComment = asyncHandler(async(req,res)=>{
   })
 });
 
+//@desc Delete Comment
+//@route DELETE /api/v1/comments/:commentId
+//@access private
+
+exports.deleteComment = asyncHandler(async(req,res)=>{
+  //Get the commentId to be deleted
+  const commentId = req.params.commentId;
+  await Comment.findByIdAndDelete(commentId);
+
+    res.status(201).json({
+    status:"Success",
+    message:"Comment successfully daleted ",
+    
+  })
+})
+
+//@desc Update Comment
+//@route PUT /api/v1/comments/:commentId
+//@access private
+
+exports.updateComment = asyncHandler(async(req,res)=>{
+  //Get the commentId to be deleted
+  const commentId = req.params.commentId;
+  //Get the message 
+  const message = req.body.message;
+  const updatedComment = await Comment.findByIdAndUpdate(commentId,{message},{new:true,runValidators:true},);
+
+    res.status(201).json({
+    status:"Success",
+    message:"Comment successfully Updated ",
+    updatedComment
+  })
+})

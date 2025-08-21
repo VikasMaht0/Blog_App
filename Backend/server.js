@@ -5,6 +5,7 @@ const connectDB = require("./config/database");
 const {globalErrorHandler , notFound} = require("./middlewares/globleErrorHandler");
 const categoriesRouter = require("./routes/categories/categoriesRouter");
 const postsRouter = require("./routes/posts/postsRouter");
+const commentsRouter = require("./routes/comments/commentsRouter");
 //!Create an express app
 const app = express();
 
@@ -15,7 +16,9 @@ dotenv.config();
 connectDB();
 
 //!setup the middleware
+// ✅ Body parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 //?setup the userRouter
 app.use("/api/v1/users",usersRouter);
@@ -23,6 +26,8 @@ app.use("/api/v1/users",usersRouter);
 app.use('/api/v1/categories',categoriesRouter);
 //?serup thr postRouter
 app.use("/api/v1/posts",postsRouter)
+//?serup thr commentRouter
+app.use("/api/v1/comments",commentsRouter);
 
 //?Not found error handler
 app.use(notFound);
