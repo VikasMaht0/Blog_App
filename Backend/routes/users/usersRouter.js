@@ -1,6 +1,6 @@
 const express = require("express");
-const { register,login,getProfile } = require('../../controllers/users/usersController');
-const isLoggedIn = require("../../middlewares/isLoggedin");
+const { register,login,getProfile, blockUser, unblockUser } = require('../../controllers/users/usersController');
+const isLoggedIn = require("../../middlewares/isLoggedIn");
 
 const usersRouter = express.Router();
 
@@ -13,5 +13,10 @@ usersRouter.post("/login",login);
 //!Profile Route
 usersRouter.get("/profile",isLoggedIn,getProfile);
 
+//!Block user Route
+usersRouter.put("/block/:userIdToBlock",isLoggedIn,blockUser);
 
-module.exports = usersRouter;
+//!unBlock user Route
+usersRouter.put("/unblock/:userIdToUnBlock",isLoggedIn,unblockUser);
+
+module.exports = usersRouter; 

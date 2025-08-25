@@ -1,6 +1,6 @@
 const express = require("express");
 const { createCategory, getAllCategories, deleteCategory, updateCategory,  } = require('../../controllers/categories/categoriesController');
-const isLoggedIn = require('../../middlewares/isLoggedin');
+const isLoggedIn = require('../../middlewares/isLoggedIn');
 
 
 

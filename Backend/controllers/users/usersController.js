@@ -70,7 +70,83 @@ exports.getProfile = asyncHandler(
     console.log("Rec", req.userAuth);
     
         const user =await User.findById(req.userAuth.id)
-        res.json({status:"Success",message:"Profile fatched",user});
-    
-}
-);
+        res.json({
+          status:"Success",
+          message:"Profile fatched",
+          user
+        });    
+});
+
+//@desc Block user
+//@route PUT /api/v1/users/block/userIdToBlock
+//@access private 
+exports.blockUser = asyncHandler(async(req,res,next)=>{
+    //!find the user id to be blocked 
+    const {userIdToBlock} = req.params.userIdToBlock;
+    //!check whether the user is present in DB or not 
+    const userToBlock = await User.findById(userIdToBlock)
+    if(!userToBlock){
+      let error = new Error("User not found");
+      next(error);
+      return;
+    }
+    //!Get the current user id 
+    const userBlocking = req?.userAuth?.id;
+
+    //!Check if it self blocking
+    if(userBlocking.toString() === userIdToBlock.toString()){
+      return next(new Error("You cannot block yourself"));
+    }
+
+    //!Get current user object from DB
+    const currentUser= await User.findById(userBlocking);
+
+    //!Check whether the userIdToBlock is already blocked
+    if(currentUser.blockedUsers.includes(userIdToBlock)){
+      return next(new Error("This User has already blocked!"));
+    }
+
+    //!Push the user to be blocked in the blockedUsers array
+    currentUser.blockedUsers.push(userIdToBlock);
+    await currentUser.save();
+
+    res.json({
+          status:"Success",
+          message:"User blocked successfully",
+    }); 
+})
+  
+//@desc Unblock user
+//@route PUT /api/v1/users/unblock/userIdToBlock
+//@access private 
+exports.unblockUser = asyncHandler(async(req,res,next)=>{
+      const userIdToUnblock = req.params.userIdToBlock;
+
+      //!Find the user in the DB
+      const userToUnBlock = await User.findById(userIdToUnblock);
+       if(!userToUnBlock){
+        let error = new Error("User unblock not found");
+        next(error);
+        return;
+       }
+      //!Find the current user
+      const userUnBlocking = req?.userAuth?._id;
+      const currentUser = await User.findById(userUnBlocking);
+      
+      //!Check if the user to unblock is already unblocked
+      if(!currentUser.blockedUsers.includes(userIdToUnblock)){
+        return next(new Error("This User is not blocked"));
+      }
+     //!Remove the user from the current user blockedUsers array
+      currentUser.blockedUsers = currentUser.blockedUsers.filter((id)=> {
+        return id.toString() !== userIdToUnblock;
+      })
+      //Update the DB
+      await currentUser.save();
+      //return the response
+      res.json({
+        status:"Success",
+        message:"User unblocked successfully",
+      });                                               
+    });
+   

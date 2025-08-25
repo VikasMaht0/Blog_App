@@ -1,6 +1,6 @@
 const express = require('express');
 const { createPost, getAllPosts, getPost, deletePost, updatePost } = require("../../controllers/posts/postController");
-const isLoggedIn = require("../../middlewares/isLoggedin");
+const isLoggedIn = require("../../middlewares/isLoggedIn");
 
 
 const postsRouter = express.Router();

@@ -16,7 +16,6 @@ dotenv.config();
 connectDB();
 
 //!setup the middleware
-// ✅ Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
