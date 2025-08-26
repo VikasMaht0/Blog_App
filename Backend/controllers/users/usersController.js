@@ -149,4 +149,52 @@ exports.unblockUser = asyncHandler(async(req,res,next)=>{
         message:"User unblocked successfully",
       });                                               
     });
-   
+
+    //@desc View other user profile
+    //@route GET /api/v1/users/view-another-profile/:userProfileId
+    //@access private 
+    exports.viewOtherProfile = asyncHandler(async(req,res,next)=>{
+      //Get the userId whose profile is to viewed
+      const userProfileId = req?.params?.userProfileId;
+      const userProfile= await User.findById(userProfileId);
+      if(!userProfile){
+        return next(new Error("User whose profile is to be viewed not present!"));
+      }
+      const currentUserId = req?.userAuth?._id;
+     // Check if we have already viewed the profile of userProfile
+        if(userProfile.profileViewers.includes(currentUserId)){
+        return next(new Error("You have already viewed the profile"));
+      }
+      //Push the currentUserId into array of userProfile
+      userProfile.profileViewers.push(currentUserId);
+      //update the DB
+      await userProfile.save();
+      //return the response
+        res.json({
+        status:"Success",
+        message:"profile successfully viewed",
+      }); 
+    })
+
+    //@desc Follow User
+    //@route Put /api/v1/users/following/:userIdToFollow
+    //@access private 
+    exports.followingUser = asyncHandler(async(req,res,next)=>{
+      //Find the current user Id
+      const currentUserId = req?.userAuth?._id;
+       //Find the user to be followed
+      const userIdToFollow = req?.params?.userIdToFollow;
+      const userProfile= await User.findById(userIdToFollow);
+      if(!userProfile){
+        return next(new Error("User to be followed not present!"));
+      }
+      
+      //Avoid current user following himself
+
+      //Push the id to of userToFollow inside following array of current user
+
+      //Push the current user id into the followers array of current userToFollow
+
+      //send the response
+
+    })

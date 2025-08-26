@@ -1,5 +1,5 @@
 const express = require("express");
-const { register,login,getProfile, blockUser, unblockUser } = require('../../controllers/users/usersController');
+const { register,login,getProfile, blockUser, unblockUser, viewOtherProfile } = require('../../controllers/users/usersController');
 const isLoggedIn = require("../../middlewares/isLoggedIn");
 
 const usersRouter = express.Router();
@@ -18,5 +18,8 @@ usersRouter.put("/block/:userIdToBlock",isLoggedIn,blockUser);
 
 //!unBlock user Route
 usersRouter.put("/unblock/:userIdToUnBlock",isLoggedIn,unblockUser);
+
+//!View another profile user Route
+usersRouter.get("/view-other-profile/:userProfileId",isLoggedIn,viewOtherProfile);
 
 module.exports = usersRouter; 
