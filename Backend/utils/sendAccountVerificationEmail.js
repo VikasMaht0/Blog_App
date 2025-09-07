@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 //Load dotenv into process object
 dotenv.config();
 
-const sendEmail = async(to, resetToken)=>{
+const sendAccountVerificationEmail = async(to, verificationToken)=>{
     try{
         //create a transport object
         const transport = nodemailer.createTransport({
@@ -22,10 +22,10 @@ const sendEmail = async(to, resetToken)=>{
         //Create the message you have to send
         const message = {
             to,
-            subject:"Password Reset Token",
-            html:`<p>You are receiving this email because you (or someone else) have reset the password</p>
+            subject:"Account verification Token",
+            html:`<p>You are receiving this email because you (or someone else) have requested to verify your account</p>
             <p>Please click on the following link , or paste this into your browser to complete</p>
-            <p>https://localhost:3000/reset-password/${resetToken}</p>
+            <p>https://localhost:3000/reset-password/${verificationToken}</p>
             <p>If you did not require this ,please ignore this email and your password will remail same </p>`
         };
         //NOw we are going to sent the mail
@@ -38,4 +38,4 @@ const sendEmail = async(to, resetToken)=>{
 };
 
 
-module.exports = sendEmail;
+module.exports = sendAccountVerificationEmail;

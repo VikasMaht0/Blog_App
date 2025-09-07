@@ -3,6 +3,10 @@ const User = require('../../models/Users/User')
 const bcryptjs = require('bcryptjs');
 const generateToken = require('../../utils/generateToken');
 const asyncHandler = require('express-async-handler');
+const sendEmail = require('../../utils/sendEmail');
+const crypto = require("crypto");
+const sendAccountVerificationEmail = require('../../utils/sendAccountVerificationEmail');
+
 
 //@desc Register new user
 //@route POST /api/v1/users/register
@@ -62,14 +66,14 @@ exports.login = asyncHandler(
 );
 
 
-//@desc ProfileView new user
+//@desc ProfileView new user 
 //@route GET /api/v1/users/profile/:id
 //@access private
 exports.getProfile = asyncHandler(
        async(req,res,next)=>{
     console.log("Rec", req.userAuth);
     
-        const user =await User.findById(req.userAuth.id)
+        const user =await User.findById(req.userAuth.id).populate({path:"posts",model:"Post",}).populate({path:"following",model:"User"}).populate({path:"followers",model:"User"}).populate({path:"blockedUsers",model:"User"}).populate({path:"profileViewers",model:"User"})
         res.json({
           status:"Success",
           message:"Profile fatched",
@@ -250,3 +254,134 @@ exports.unblockUser = asyncHandler(async(req,res,next)=>{
         message:"You have unfollow the user successfully",
       });
     });
+
+    //@desc Forgot Password
+    //@route Post /api/v1/users/forgot-password
+    //@access public
+    exports.forgotPassword=asyncHandler(async(req,res,next)=>{
+      //Fetched the email
+      const {email} = req.body;
+
+      //Find email in the DB
+           const userFound = await User.findOne({email});
+          if(!userFound){
+            let error = new Error("This email id is not registered with us ");
+            next(error);
+            return;
+          }
+          //Get the reset token
+          const resetToken=await userFound.generatePasswordResetToken();
+          //save the changes (resetToken and expiryTime) to the DB
+          await userFound.save();
+          sendEmail(email, resetToken);
+
+          //send the response
+          res.json({
+          status:"Success",
+          message:"Password reset token send to your email successfully",
+        });
+
+    });
+
+    //@desc Reset Password
+    //@route Post /api/v1/users/reset-password/:resetToken
+    //@access public
+    exports.resetPassword = asyncHandler(async(req,res,next)=>{
+      //Get the token from params 
+      const {resetToken} = req.params;
+      //Get the password from user
+      const {password} = req.body;
+    
+    //convert resetToken into hashed token
+    const hashedToken = crypto
+       .createHash("sha256")
+       .update(resetToken)
+       .digest("hex");
+       
+    //verify the token with DB 
+    const userFound =await User.findOne({passwordResetToken: hashedToken,passwordResetExpires:{$gt:Date.now()}})
+    //if user is not found
+    if(!userFound){
+        let error = new Error("Password reset token is invalid or expired");
+        next(error);
+        return;
+      }
+      //Update the new password
+      const salt = await bcryptjs.genSalt(10);
+      userFound.password = await bcryptjs.hash(password,salt);
+      userFound.passwordResetToken = undefined;
+      userFound.passwordResetExpires = undefined;
+      
+      //Resave the user
+      await userFound.save();
+
+      //send the response
+          res.json({
+          status:"Success",
+          message:"Password has been changed successfully",
+        });
+    })
+
+    //@desc Send Account Verification Mail
+    //@route Post /api/v1/users/account-verification-email
+    //@access private
+    exports.accountVerificationEmail = asyncHandler(async(req,res,next)=>{
+      //Find the current user email 
+      const currentUser = await User.findById(req.userAuth._id);
+      if(!currentUser){
+        let error = new Error("User not found");
+        next(error);
+        return;
+      }
+      //Get the token from current user object
+        const verifyToken=await currentUser.generateAccountVerificationToken();
+
+      //resave the user
+      await currentUser.save();
+      
+      //send the verification email
+      sendAccountVerificationEmail(currentUser.email,verifyToken);
+
+          //send the response
+          res.json({
+          status:"Success",
+          message:`Account verification email has been send to your register email ID ${currentUser.email}`,
+        });
+
+    })
+
+    //@desc Account token Verification 
+    //@route Post /api/v1/users/verify-account/:verifyToken  
+    //@access private
+   exports.verifyAccount = asyncHandler(async(req,res,next)=>{
+    //Get the token from params
+    const {verifyToken} = req.params;
+    //convert the token into hashed form
+    let cryptoToken = crypto
+       .createHash("sha256")
+       .update(verifyToken)
+       .digest("hex");
+
+       const userFound = await User.findOne({
+        accountVerificationToken: cryptoToken,
+        accountVerificationExpires:{$gt:Datenow()},
+       });
+       if(!userFound){
+        let error = new Error("Account token invalid or expired");
+        next(error);
+        return;
+       }
+       //Update the user 
+       userFound.isVerified = true;
+       userFound.accountVerificationToken=undefined;
+       userFound.accountVerificationExpires=undefined;
+       //resave the user 
+       await userFound.save();
+
+          //send the response
+          res.json({
+          status:"Success",
+          message:"Account successfully verified",
+        });
+   });
+   

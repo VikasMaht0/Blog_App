@@ -6,7 +6,9 @@ const {globalErrorHandler , notFound} = require("./middlewares/globleErrorHandle
 const categoriesRouter = require("./routes/categories/categoriesRouter");
 const postsRouter = require("./routes/posts/postsRouter");
 const commentsRouter = require("./routes/comments/commentsRouter");
+const sendEmail = require("./utils/sendEmail");
 //!Create an express app
+sendEmail("vikask11012000@gmail.com","HelloWelcome123");
 const app = express();
 
 //!load the environment variable
