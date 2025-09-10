@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema({
     title : {
         type: String,
-        require: true,
+        required: true,
     },
     image:{
         type: String,
-        default:" ",
+        required:true,
     },
     claps:{
        type: Number,
@@ -14,12 +14,12 @@ const postSchema = new mongoose.Schema({
     },
     content:{
         type:String,
-        require: true,
+        required: true,
     },
    auther:{
     type: mongoose.Schema.Types.ObjectId,
     ref:"User",
-    require:true,
+    required:true,
    },
    share:{
     type:Number,
@@ -32,7 +32,7 @@ const postSchema = new mongoose.Schema({
    category:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"Category",
-    require:true,
+    required:true,
    },
    scheduledPublished:{
     type:Date,

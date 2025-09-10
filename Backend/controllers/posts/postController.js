@@ -23,7 +23,8 @@ exports.createPost = asyncHandler(async(req,res,next)=>{
             title,
             content,
             category:categoryId,
-            author:req?.userAuth?._id
+            author:req?.userAuth?._id,
+            image: req.file.path
       });
 
      //update user by adding post in it 
