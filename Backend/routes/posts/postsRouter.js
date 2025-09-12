@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require("multer");
 const storage = require("../../utils/fileUpload");
-const { createPost, getAllPosts, getPost, deletePost, updatePost, likePost, disLikePost, schedulePost } = require("../../controllers/posts/postController");
+const { createPost, getAllPosts, getPost, deletePost, updatePost, likePost, disLikePost, schedulePost, clapPost } = require("../../controllers/posts/postController");
 const isLoggedIn = require("../../middlewares/isLoggedIn");
 const isAccountVerified = require('../../middlewares/isAccountVerified');
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const cors = require("cors");
 const usersRouter = require("./routes/users/usersRouter");
 const connectDB = require("./config/database");
 const {globalErrorHandler , notFound} = require("./middlewares/globleErrorHandler");
@@ -19,6 +20,8 @@ connectDB();
 
 //!setup the middleware
 app.use(express.json());
+//cors middleware
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 //?setup the userRouter
